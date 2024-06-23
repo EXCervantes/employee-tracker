@@ -1,5 +1,5 @@
 const express = require("express");
-const { default: inquirer } = require("inquirer");
+const inquirer = require("inquirer");
 const { Pool } = require("pg");
 require('dotenv').config();
 
@@ -12,17 +12,18 @@ app.use(express.json());
 
 // Connect to database
 const pool = new Pool(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
   {
+    database: process.env.DB_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     host: "127.0.0.1",
   },
-  console.log("Connected to the employees database.")
 );
 
+console.log("Connected to the employees database.")
+
 const main = async () => {
-  const result = await inquirer.prompt([
+  const data = await inquirer.prompt([
     {
       type: "list",
       message: "What would you like to do?",
@@ -44,78 +45,80 @@ const main = async () => {
         'Nothing']
     }
   ])
+  result = data.startup
+  console.log(result)
   if (result === 'View departments') {
-    displayDepartments()
+    await displayDepartments()
   }
 
   if (result === 'View roles') {
-    displayRoles()
+    await displayRoles()
   }
   if (result === 'View employees') {
-    displayEmployees()
+    await displayEmployees()
   }
   if (result === 'Add department') {
-    addDepartment()
+    await addDepartment()
   }
   if (result === 'Add role') {
-    addRole()
+    await addRole()
   }
   if (result === 'Add employee') {
-    addEmployee()
+    await addEmployee()
   }
   if (result === 'Update employee role') {
-    updateEmployee()
+    await updateEmployee()
   }
   if (result === 'Update employee manager') {
-    updateManager()
+    await updateManager()
   }
   if (result === 'View employees by department') {
-    viewEmployeeDept()
+    await viewEmployeeDept()
   }
   if (result === 'Delete department') {
-    deleteDepartment()
+    await deleteDepartment()
   }
   if (result === 'Delete role') {
-    deleteRole()
+    await deleteRole()
   }
   if (result === 'Delete employee') {
-    deleteEmployee()
+    await deleteEmployee()
   }
   if (result === 'View department budget') {
-    viewDeptBudget()
+    await viewDeptBudget()
   }
-  // if (result === 'Nothing') {
-
-  // }
-
-  // Show all departments
-  const displayDepartments = async () => {
-    console.log('Displaying all departments...\n')
-    const sql = `SELECT department.id AS id, department.name AS department FROM department`
-
-    pool.query(sql, (err, rows) => {
-      err ? console.log(err) : console.table(rows)
-      // display mainMenu
-    })
+  if (result === 'Nothing') {
+    await 
   }
+}
 
-  // Show all roles
-  const displayRoles = async () => {
-    console.log('Displaying all roles...\n')
-    const sql = `SELECT role.id, role.title, department.name AS department
+// Show all departments
+const displayDepartments = async () => {
+  console.log('Displaying all departments...\n')
+  const sql = `SELECT id, department_name AS department FROM department`
+
+  const { rows } = await pool.query(sql)
+  console.table(rows)
+
+}
+
+// Show all roles
+const displayRoles = async () => {
+  console.log('Displaying all roles...\n')
+  const sql = `SELECT role.id, role.title, department.name AS department
     FROM role
     INNER JOIN department ON role.department_id = department.id`
 
-    pool.query(sql, (err, rows) => {
-      err ? console.log(err) : console.table(rows)
-      // display mainMenu
-    })
-  }
+  pool.query(sql, (err, rows) => {
+    err ? console.log(err) : console.table(rows)
+    // display mainMenu
+  })
+}
 
-  // Show all employees
-  const displayEmployees = async () => {
-    console.log('Displaying all employee...\n')
-    const sql = `SELECT employee.id,
+// Show all employees
+const displayEmployees = async () => {
+  console.log('Displaying all employee...\n')
+  const sql = `SELECT employee.id,
               employee.first_name,
               employee.last_name,
               role.title,
@@ -127,143 +130,162 @@ const main = async () => {
               LEFT JOIN role ON employee.role_id = role.id
               LEFT JOIN department ON role.department_id = manager.id`
 
-    pool.query(sql, (err, rows) => {
-      err ? console.log(err) : console.table(rows)
-      // display mainMenu
-    })
-  }
+  pool.query(sql, (err, rows) => {
+    err ? console.log(err) : console.table(rows)
+    // display mainMenu
+  })
+}
 
-  // Add a department
-  const addDepartment = async () => {
-    const result = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'addDept',
-        message: "What department do you want to add?",
-        validate: function (answer) {
-          if (answer.length > 2) return true;
-          return console.log("Please enter a department");
-        }
-      }
-    ])
-    const sql = `INSERT INTO department (name)
-              VALUES (?)`;
-    pool.query(sql, answer.addDept, (err, data) => {
-      err ? console.log(err) : console.log('Added ' + answer.addDept + ' to department')
-
-      displayDepartments();
-    })
-
-    // Add a role
-    const addRole = async () => {
-      const result = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'role',
-          message: "What role do you want to add?",
-          validate: function (answer) {
-            if (answer.length > 2) return true;
-            return console.log("Please enter a role");
-          }
-        },
-        {
-          type: 'input',
-          name: 'salary',
-          message: "What is the salary of this role? (Do not enter decimals or commas)",
-          validate: function (answer) {
-            if (isNaN(parseFloat(answer))) return true;
-            return console.log("Please enter numbers for the salary");
-          }
-        }
-      ])
-        (result) => {
-  const params = [result.role, result.salary]
-
-  const sqlRole = `SELECT name, id FROM department`;
-  pool.query(sql, answer.addDept, (err, data) => {
-    err ? console.log(err) : console.log('Added ' + answer.addDept + ' to department')
-    const dept = result.map(({ name, id }) => ({ name: name, value: id }))
-  }
-    const result = await inquirer.prompt([
+// Add a department
+const addDepartment = async () => {
+  const result = await inquirer.prompt([
     {
-      type: 'list',
-      name: 'dept',
-      message: "What department is this role in?",
-      choices: dept
+      type: 'input',
+      name: 'addDept',
+      message: "What department do you want to add?",
+      validate: function (answer) {
+        if (answer.length > 2) return true;
+        return console.log("Please enter a department");
+      }
     }
   ])
+  const sql = `INSERT INTO department (name)
+              VALUES (?)`;
+  pool.query(sql, answer.addDept, (err, data) => {
+    err ? console.log(err) : console.log('Added ' + answer.addDept + ' to department')
+
+    displayDepartments();
+  })
 }
+
+// Add a role
+//   const addRole = async () => {
+//     const result = await inquirer.prompt([
+//       {
+//         type: 'input',
+//         name: 'role',
+//         message: "What role do you want to add?",
+//         validate: function (answer) {
+//           if (answer.length > 2) return true;
+//           return console.log("Please enter a role");
+//         }
+//       },
+//       {
+//         type: 'input',
+//         name: 'salary',
+//         message: "What is the salary of this role? (Do not enter decimals or commas)",
+//         validate: function (answer) {
+//           if (isNaN(parseFloat(answer))) return true;
+//           return console.log("Please enter numbers for the salary");
+//         }
+//       }
+//     ])
+//       (result) => {
+// const params = [result.role, result.salary]
+
+// const sqlRole = `SELECT name, id FROM department`;
+// pool.query(sql, answer.addDept, (err, data) => {
+//   err ? console.log(err) : console.log('Added ' + answer.addDept + ' to department')
+//   const dept = result.map(({ name, id }) => ({ name: name, value: id }))
+// }
+//     const result = await inquirer.prompt([
+//     {
+//       type: 'list',
+//       name: 'dept',
+//       message: "What department is this role in?",
+//       choices: dept
+//     }
+//   ])
+// }
 
 // Add an employee
 const addEmployee = async () => {
 
 }
 // Update an employee role
+const updateEmployee = async () => {
 
+}
 // Update a manager
+const updateManager = async () => {
+
+}
 
 // View employees by department
+const viewEmployeeDept = async () => {
 
+}
 // Delete a department
+const deleteDepartment = async () => {
 
+}
 // Delete a role
+const deleteRole = async () => {
+
+}
 
 // Delete an employee
+const deleteEmployee = async () => {
+
+}
 
 // View department budgets
+const viewDeptBudget = async () => {
 
-{
-  type: 'input',
-    name: 'firstName',
-      message: "What is the employee's first name?",
-    },
-{
-  type: 'input',
-    name: 'lastName',
-      message: "What is the employee's last name?",
-    },
-{
-  type: 'input',
-    name: 'employeeRole',
-      message: "What is the employee's role?",
-    },
-{
-  type: 'input',
-    name: 'updateEmployeeRole',
-      message: "Which employee role would you like to update?",
-        choices: employee
-},
-{
-  type: 'list',
-    name: 'manager',
-      message: "Who is the employee's manager?",
-        choices: managers
-},
-{
-  type: 'list',
-    name: 'role',
-      message: "What is the employee's new role?",
-        choices: roles
-},
-{
-  type: 'list',
-    name: 'dept',
-      message: "What department do you want to delete?",
-        choices: dept
-},
-{
-  type: 'list',
-    name: 'role',
-      message: "What role do you want to delete?",
-        choices: role
-},
-{
-  type: 'list',
-    name: 'name',
-      message: "Which employee would you like to delete?",
-        choices: employees
 }
-  };
+
+// {
+//   type: 'input',
+//     name: 'firstName',
+//       message: "What is the employee's first name?",
+//     },
+// {
+//   type: 'input',
+//     name: 'lastName',
+//       message: "What is the employee's last name?",
+//     },
+// {
+//   type: 'input',
+//     name: 'employeeRole',
+//       message: "What is the employee's role?",
+//     },
+// {
+//   type: 'input',
+//     name: 'updateEmployeeRole',
+//       message: "Which employee role would you like to update?",
+//         choices: employee
+// },
+// {
+//   type: 'list',
+//     name: 'manager',
+//       message: "Who is the employee's manager?",
+//         choices: managers
+// },
+// {
+//   type: 'list',
+//     name: 'role',
+//       message: "What is the employee's new role?",
+//         choices: roles
+// },
+// {
+//   type: 'list',
+//     name: 'dept',
+//       message: "What department do you want to delete?",
+//         choices: dept
+// },
+// {
+//   type: 'list',
+//     name: 'role',
+//       message: "What role do you want to delete?",
+//         choices: role
+// },
+// {
+//   type: 'list',
+//     name: 'name',
+//       message: "Which employee would you like to delete?",
+//         choices: employees
+// }
+//   };
 
 pool.connect();
 
@@ -277,3 +299,10 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+(async () => {
+  while (true) {
+    await main();
+  }
+})()
