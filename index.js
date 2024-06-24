@@ -17,7 +17,7 @@ const pool = new Pool(
 pool.connect();
 console.log(colors.bgBrightGreen("============================================"))
 console.log(colors.bgBrightGreen("|                                          |"))
-console.log(colors.bgBrightGreen("|            EMPLOYEE MANAGER              |"))
+console.log(colors.bgBrightGreen("|  ********  EMPLOYEE  MANAGER  ********   |"))
 console.log(colors.bgBrightGreen("|                                          |"))
 console.log(colors.bgBrightGreen("============================================"))
 
@@ -44,7 +44,8 @@ const main = async () => {
         'Delete a role',
         'Delete an employee',
         'View department budgets',
-        'Quit']
+        'Quit'
+      ]
     }
   ])
 
