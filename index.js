@@ -34,16 +34,16 @@ const main = async () => {
         'View all departments',
         'View all roles',
         'View all employees',
+        'View employees by department',
+        'View department budgets',
         'Add a department',
         'Add a role',
         'Add an employee',
         'Update an employee role',
         'Update an employee manager',
-        'View employees by department',
         'Delete a department',
         'Delete a role',
         'Delete an employee',
-        'View department budgets',
         'Quit'
       ]
     }
@@ -54,12 +54,17 @@ const main = async () => {
   if (result === 'View all departments') {
     await displayDepartments()
   }
-
   if (result === 'View all roles') {
     await displayRoles()
   }
   if (result === 'View all employees') {
     await displayEmployees()
+  }
+  if (result === 'View employees by department') {
+    await viewEmployeeDept()
+  }
+  if (result === 'View department budgets') {
+    await viewDeptBudget()
   }
   if (result === 'Add a department') {
     await addDepartment()
@@ -76,9 +81,6 @@ const main = async () => {
   if (result === 'Update an employee manager') {
     await updateManager()
   }
-  if (result === 'View employees by department') {
-    await viewEmployeeDept()
-  }
   if (result === 'Delete a department') {
     await deleteDepartment()
   }
@@ -87,9 +89,6 @@ const main = async () => {
   }
   if (result === 'Delete an employee') {
     await deleteEmployee()
-  }
-  if (result === 'View department budgets') {
-    await viewDeptBudget()
   }
   if (result === 'Quit') {
     process.exit(0)
@@ -143,6 +142,20 @@ const displayEmployees = async () => {
   console.table(rows)
 }
 
+// View employees by department
+const viewEmployeeDept = async () => {
+  console.log("Displaying employee by departments...\n".green);
+  const sqlEmpDept = `SELECT employee.first_name, 
+                      employee.last_name, 
+                      department.department_name AS department
+               FROM employee 
+               LEFT JOIN roles ON employee.role_id = roles.id 
+               LEFT JOIN department ON roles.department_id = department.id`;
+
+  const { rows } = await pool.query(sqlEmpDept)
+  console.table(rows)
+}
+
 // Add a department
 const addDepartment = async () => {
   const promptData = await inquirer.prompt([
@@ -160,10 +173,28 @@ const addDepartment = async () => {
   result = promptData.addDept
 
   const sqlAddDept = `INSERT INTO department (department_name)
-                      VALUES ($1)`;
+  VALUES ($1)`;
   const { rows } = await pool.query(sqlAddDept, [result])
 
   await displayDepartments();
+}
+
+// View department budgets
+const viewDeptBudget = async () => {
+  console.log("Displaying budget by department...\n".green);
+
+  const sqlDeptBudget = `SELECT roles.department_id AS id, 
+                      department.department_name AS department,
+                      SUM(roles.salary) AS budget
+               FROM
+                roles  
+               JOIN department ON roles.department_id = department.id
+               GROUP BY
+                roles.department_id,
+                department.department_name`;
+
+  const { rows } = await pool.query(sqlDeptBudget)
+  console.table(rows)
 }
 
 // Add a role
@@ -388,20 +419,6 @@ const updateManager = async () => {
   await displayEmployees()
 }
 
-// View employees by department
-const viewEmployeeDept = async () => {
-  console.log("Displaying employee by departments...\n".green);
-  const sqlEmpDept = `SELECT employee.first_name, 
-                      employee.last_name, 
-                      department.department_name AS department
-               FROM employee 
-               LEFT JOIN roles ON employee.role_id = roles.id 
-               LEFT JOIN department ON roles.department_id = department.id`;
-
-  const { rows } = await pool.query(sqlEmpDept)
-  console.table(rows)
-}
-
 // Delete a department
 const deleteDepartment = async () => {
   const sqlDepts = `SELECT * FROM department`
@@ -481,24 +498,6 @@ const deleteEmployee = async () => {
   console.log("Deleted employee".green)
 
   await displayEmployees()
-}
-
-// View department budgets
-const viewDeptBudget = async () => {
-  console.log("Displaying budget by department...\n".green);
-
-  const sqlDeptBudget = `SELECT roles.department_id AS id, 
-                      department.department_name AS department,
-                      SUM(roles.salary) AS budget
-               FROM
-                roles  
-               JOIN department ON roles.department_id = department.id
-               GROUP BY
-                roles.department_id,
-                department.department_name`;
-
-  const { rows } = await pool.query(sqlDeptBudget)
-  console.table(rows)
 }
 
 // Initialize main menu
