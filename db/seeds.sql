@@ -6,13 +6,13 @@ VALUES  ('Engineering'),
         ('Legal');
 
 INSERT INTO roles (title, salary, department_id)
-VALUES  ('Engineering Lead', 100000, 1),
+VALUES  ('Engineering Manager', 100000, 1),
         ('Staff Engineer', 80000, 1),
         ('Finance Manager', 85000, 2),
         ('Customer Service Manager', 95000, 3),
         ('Accountant', 70000, 2),
         ('Customer Service', 82000, 3),
-        ('Software Engineer', 70000, 3),
+        ('Software Engineer', 70000, 1),
         ('Sales Manager', 75000, 4),
         ('Salesperson', 65000, 4),
         ('Legal Manager', 110000, 5),
@@ -29,4 +29,4 @@ VALUES  ('Michael', 'Afton',  2, NULL),
         ('Ada', 'Wong',  9, NULL), 
         ('Alyssa', 'Hamilton',  10, 9), 
         ('Chris', 'Redfield',  11, NULL),
-        ('Heather', 'Mason',  6, 11);    
+        ('Heather', 'Mason',  6, NULL);    
