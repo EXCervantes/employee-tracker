@@ -19,7 +19,7 @@ VALUES  ('Engineering Lead', 100000, 1),
         ('Lawyer', 95000, 5);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES  ('Michael', 'Afton',  2, 1),
+VALUES  ('Michael', 'Afton',  2, NULL),
         ('James', 'Sunderland',  3, 1), 
         ('Jennifer', 'Simpson',  4, NULL), 
         ('Issac', 'Clark',  5, 4),
@@ -28,5 +28,5 @@ VALUES  ('Michael', 'Afton',  2, 1),
         ('Leon', 'Kennedy',  8, 6), 
         ('Ada', 'Wong',  9, NULL), 
         ('Alyssa', 'Hamilton',  10, 9), 
-        ('Chris', 'Redfield',  11, NULL), 
+        ('Chris', 'Redfield',  11, NULL),
         ('Heather', 'Mason',  6, 11);    
