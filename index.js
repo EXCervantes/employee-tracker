@@ -156,6 +156,24 @@ const viewEmployeeDept = async () => {
   console.table(rows)
 }
 
+// View department budgets
+const viewDeptBudget = async () => {
+  console.log("Displaying budget by department...\n".green);
+
+  const sqlDeptBudget = `SELECT roles.department_id AS id, 
+                      department.department_name AS department,
+                      SUM(roles.salary) AS budget
+               FROM
+                roles  
+               JOIN department ON roles.department_id = department.id
+               GROUP BY
+                roles.department_id,
+                department.department_name`;
+
+  const { rows } = await pool.query(sqlDeptBudget)
+  console.table(rows)
+}
+
 // Add a department
 const addDepartment = async () => {
   const promptData = await inquirer.prompt([
@@ -177,24 +195,6 @@ const addDepartment = async () => {
   const { rows } = await pool.query(sqlAddDept, [result])
 
   await displayDepartments();
-}
-
-// View department budgets
-const viewDeptBudget = async () => {
-  console.log("Displaying budget by department...\n".green);
-
-  const sqlDeptBudget = `SELECT roles.department_id AS id, 
-                      department.department_name AS department,
-                      SUM(roles.salary) AS budget
-               FROM
-                roles  
-               JOIN department ON roles.department_id = department.id
-               GROUP BY
-                roles.department_id,
-                department.department_name`;
-
-  const { rows } = await pool.query(sqlDeptBudget)
-  console.table(rows)
 }
 
 // Add a role
