@@ -356,12 +356,28 @@ const deleteDepartment = async () => {
 }
 // Delete a role
 const deleteRole = async () => {
-  // {
-  //   type: 'list',
-  //     name: 'role',
-  //       message: "What role do you want to delete?",
-  //         choices: role
-  // }
+  const sqlRoles = `SELECT * FROM roles`
+  const { rows } = await pool.query(sqlRoles)
+
+  const role = rows.map(({ id, title }) => {
+    return { name: title, value: id }
+  })
+
+  const promptData = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'role',
+      message: "What role do you want to delete?",
+      choices: role
+    }
+  ])
+
+  const deletedRole = promptData.role
+  const sqlDelRole = `DELETE FROM roles WHERE id = $1`;
+
+  const delRoleQuery = await pool.query(sqlDelRole, [deletedRole])
+
+  await displayRoles()
 }
 
 // Delete an employee
@@ -372,7 +388,6 @@ const deleteEmployee = async () => {
   const employees = rows.map(({ id, first_name, last_name }) => {
     return { name: first_name + ' ' + last_name, value: id }
   })
-  console.log(employees)
 
   const promptData = await inquirer.prompt([
     {
@@ -382,18 +397,13 @@ const deleteEmployee = async () => {
       choices: employees
     }
   ])
-  console.log(promptData)
-  const params = [prompt1Data.role, prompt1Data.salary, prompt2Data.dept]
-  const sqlRoles = `INSERT INTO
-                    roles (title, salary, department_id)
-                   VALUES 
-                    ($1, $2, $3)`
 
-  const rolesQuery = await pool.query(sqlRoles, params)
-  // console.table(rolesQuery)
+  const deletedEmp = promptData.name
+  const sqlDelEmp = `DELETE FROM employee WHERE id = $1`;
+
+  const delEmployeeQuery = await pool.query(sqlDelEmp, [deletedEmp])
 
   await displayEmployees()
-
 }
 
 // View department budgets
