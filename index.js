@@ -223,11 +223,19 @@ const addEmployee = async () => {
       type: 'input',
       name: 'firstName',
       message: "What is the employee's first name?",
+      validate: function (answer) {
+        if (answer.length >= 1) return true;
+        return console.log("Please enter a department");
+      }
     },
     {
       type: 'input',
       name: 'lastName',
       message: "What is the employee's last name?",
+      validate: function (answer) {
+        if (answer.length >= 1) return true;
+        return console.log("Please enter a department");
+      }
     },
   ])
 
@@ -332,7 +340,7 @@ const updateEmployee = async () => {
   await displayEmployees()
 }
 
-// Update a manager
+// Update an employee manager
 const updateManager = async () => {
   const sqlEmployees = `SELECT * FROM employee`;
   const { rows } = await pool.query(sqlEmployees)
@@ -492,6 +500,7 @@ const viewDeptBudget = async () => {
   console.table(rows)
 }
 
+// Initialize main menu
 (async () => {
   while (true) {
     try {
