@@ -91,18 +91,18 @@ const main = async () => {
 // Show all departments
 const displayDepartments = async () => {
   console.log('Displaying all departments...\n')
-  const sql = `SELECT
+  const sqlDepts = `SELECT
                 id,
                 department_name AS department FROM department`
 
-  const { rows } = await pool.query(sql)
+  const { rows } = await pool.query(sqlDepts)
   console.table(rows)
 }
 
 // Show all roles
 const displayRoles = async () => {
   console.log('Displaying all roles...\n')
-  const sql = `SELECT 
+  const sqlRoles = `SELECT 
                 roles.id,
                 roles.title,
                 department.department_name AS department
@@ -110,14 +110,14 @@ const displayRoles = async () => {
                 roles
               INNER JOIN department ON roles.department_id = department.id`
 
-  const { rows } = await pool.query(sql)
+  const { rows } = await pool.query(sqlRoles)
   console.table(rows)
 }
 
 // Show all employees
 const displayEmployees = async () => {
   console.log('Displaying all employee...\n')
-  const sql = `SELECT employee.id,
+  const sqlEmployees = `SELECT employee.id,
                 employee.first_name,
                 employee.last_name,
                 roles.title,
@@ -130,13 +130,13 @@ const displayEmployees = async () => {
               LEFT JOIN department ON roles.department_id = department.id
               LEFT JOIN employee manager ON employee.manager_id = manager.id`
 
-  const { rows } = await pool.query(sql)
+  const { rows } = await pool.query(sqlEmployees)
   console.table(rows)
 }
 
 // Add a department
 const addDepartment = async () => {
-  const data = await inquirer.prompt([
+  const promptData = await inquirer.prompt([
     {
       type: 'input',
       name: 'addDept',
@@ -148,11 +148,11 @@ const addDepartment = async () => {
     }
   ])
 
-  result = data.addDept
+  result = promptData.addDept
 
-  const sql = `INSERT INTO department (department_name)
+  const sqlAddDept = `INSERT INTO department (department_name)
               VALUES ($1)`;
-  const { rows } = await pool.query(sql, [result])
+  const { rows } = await pool.query(sqlAddDept, [result])
   console.table(rows)
 
   await displayDepartments();
@@ -327,6 +327,7 @@ const updateEmployee = async () => {
 
   await displayEmployees()
 }
+
 // Update a manager
 const updateManager = async () => {
 
@@ -335,25 +336,44 @@ const updateManager = async () => {
 // View employees by department
 const viewEmployeeDept = async () => {
   console.log('Displaying employee by departments...\n');
-  const sql = `SELECT employee.first_name, 
+  const sqlEmpDept = `SELECT employee.first_name, 
                       employee.last_name, 
                       department.department_name AS department
                FROM employee 
                LEFT JOIN roles ON employee.role_id = roles.id 
                LEFT JOIN department ON roles.department_id = department.id`;
 
-  const { rows } = await pool.query(sql)
+  const { rows } = await pool.query(sqlEmpDept)
   console.table(rows)
 }
+
 // Delete a department
 const deleteDepartment = async () => {
-  // {
-  //   type: 'list',
-  //     name: 'dept',
-  //       message: "What department do you want to delete?",
-  //         choices: dept
-  // }
+  const sqlDepts = `SELECT * FROM department`
+  const { rows } = await pool.query(sqlDepts)
+
+  const dept = rows.map(({ department_name, id }) => {
+    return { name: department_name, value: id }
+  })
+
+  const promptData = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'dept',
+      message: "What department do you want to delete?",
+      choices: dept
+    }
+  ])
+
+  const deletedDept = promptData.dept
+  const sqlDelDept = `DELETE FROM department WHERE id = $1`;
+
+  const delRoleQuery = await pool.query(sqlDelDept, [deletedDept])
+  console.log("Deleted department")
+
+  await displayDepartments()
 }
+
 // Delete a role
 const deleteRole = async () => {
   const sqlRoles = `SELECT * FROM roles`
@@ -376,6 +396,7 @@ const deleteRole = async () => {
   const sqlDelRole = `DELETE FROM roles WHERE id = $1`;
 
   const delRoleQuery = await pool.query(sqlDelRole, [deletedRole])
+  console.log("Deleted role")
 
   await displayRoles()
 }
@@ -402,6 +423,7 @@ const deleteEmployee = async () => {
   const sqlDelEmp = `DELETE FROM employee WHERE id = $1`;
 
   const delEmployeeQuery = await pool.query(sqlDelEmp, [deletedEmp])
+  console.log("Deleted employee")
 
   await displayEmployees()
 }
@@ -410,7 +432,7 @@ const deleteEmployee = async () => {
 const viewDeptBudget = async () => {
   console.log("Displaying budget by department...\n");
 
-  const sql = `SELECT roles.department_id AS id, 
+  const sqlDeptBudget = `SELECT roles.department_id AS id, 
                       department.department_name AS department,
                       SUM(roles.salary) AS budget
                FROM
@@ -420,12 +442,16 @@ const viewDeptBudget = async () => {
                 roles.department_id,
                 department.department_name`;
 
-  const { rows } = await pool.query(sql)
+  const { rows } = await pool.query(sqlDeptBudget)
   console.table(rows)
 }
 
 (async () => {
   while (true) {
-    await main();
+    try {
+      await main();
+    } catch (error) {
+      console.error(error)
+    }
   }
 })()
