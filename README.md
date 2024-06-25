@@ -45,7 +45,7 @@ Finally to initialize this application run `node index.js` or `npm start` in the
   
 ## Usage
   
-To run the application open the Terminal or GitBash in VSCode and run `node index.js`. The application will ask a series of questions relating to employees and other business information from a list of options. Selecting "Quit" will terminate the application.
+To run the application open the Terminal or GitBash in VSCode and run `node index.js` or `npm start`. The application will ask a series of questions relating to employees and other business information from a list of options. Selecting "Quit" will terminate the application.
 
 A user can view either all the departments, roles, and employees. Additionally, employees can be viewed sorted by department and the individual department budgets.
 
@@ -53,7 +53,7 @@ There are also options to add a department, role, or employee. These same option
 
 ### Video Demonstrating Application In Use
 
-Here is a [link](https://drive.google.com/file/d/1Qsau0qdIgx56lyg5Y7hbXbSCSQ5c8KWY/view?usp=drive_link) to a video demonstrating how this application works.
+Here is a [link to a video](https://drive.google.com/file/d/1Qsau0qdIgx56lyg5Y7hbXbSCSQ5c8KWY/view?usp=drive_link) demonstrating how this application works.
 
 ### Screenshots of the Application
 
