@@ -2,16 +2,14 @@
 
 ## Table of Contents
 
-- [Employee Tracker](#employee-tracker)
-  - [Table of Contents](#table-of-contents)
-  - [Description](#description)
-  - [Technologies and Packages Used](#technologies-and-packages-used)
-  - [Installation](#installation)
-  - [Usage](#usage)
-    - [Video Demonstrating Application In Use](#video-demonstrating-application-in-use)
-    - [Screenshots of the Application](#screenshots-of-the-application)
-  - [Credits](#credits)
-  - [License](#license)
+- [Description](#description)
+- [Technologies and Packages Used](#technologies-and-packages-used)
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Video Demonstrating Application In Use](#video-demonstrating-application-in-use)
+  - [Screenshots of the Application](#screenshots-of-the-application)
+- [Credits](#credits)
+- [License](#license)
 
 ## Description
 
