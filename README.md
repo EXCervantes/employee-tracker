@@ -55,7 +55,7 @@ There are also options to add a department, role, or employee. These same option
 
 ### Video Demonstrating Application In Use
 
-Here is a [link](https://drive.google.com/file/d/1eKcGoN9SfL_75I7ejRMg1LxDazqr_PpX/view?usp=drive_link) to a video demonstrating how this application works.
+Here is a [link](https://drive.google.com/file/d/1Qsau0qdIgx56lyg5Y7hbXbSCSQ5c8KWY/view?usp=drive_link) to a video demonstrating how this application works.
 
 ### Screenshots of the Application
 
